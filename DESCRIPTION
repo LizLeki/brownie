@@ -1,0 +1,13 @@
+Package: brownie
+Type: Package
+Title: Lightish weight GUIs for RStudio
+Version: 0.0.1
+Author: person("Elizabeth", "Leki", email = "elizabethleki@gmail.com", role = c("aut","cre"))
+Description: This package was designed to help provide lightish weight GUI-style capabilities in 
+    RStudio for use by non-programmers when transitioning to R from programs such as SPSS.
+Depends: R (>= 3.4.2)
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+Imports: shiny, miniUI, shinycssloaders
+RoxygenNote: 6.0.1
