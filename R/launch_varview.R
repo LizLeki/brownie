@@ -31,25 +31,27 @@ launch_varview <- function(.df) {
     gadgetTitleBar("Data.frame Explorer",
                    left = NULL),
     miniTabstripPanel(
+      miniTabPanel("Data Labels", icon = icon(name = "tags", lib = "glyphicon"),
+                   miniContentPanel(
+                     shinycssloaders::withSpinner(dataTableOutput("label_tbl"), size = 2)
+                   )
+      ),
+      miniTabPanel("Variable Descriptives", icon = icon("calculator"),
+                   miniContentPanel(
+                     shinycssloaders::withSpinner(dataTableOutput("desc_tbl"), size = 2)
+                   )
+      ),
       miniTabPanel("Variable Explorer", icon = icon(name = "map-o"),
                    miniContentPanel(
                      fillRow(
                        fillCol(selectizeInput("var_name", label = "Variable",
-                                           choices = names(.df),
-                                           options = list(maxOptions = 3000)),
+                                              choices = names(.df),
+                                              options = list(maxOptions = 3000)),
                                textOutput(outputId = "unlab")
+                               
                        ),
-                             dataTableOutput(outputId = "varresp_labels"))
-                     )
-      ),
-      miniTabPanel("Data Labels", icon = icon(name = "table"),
-                   miniContentPanel(
-                     shinycssloaders::withSpinner(dataTableOutput("label_tbl"), size = 2, color = "#9242f4")
-                   )
-      ),
-      miniTabPanel("Variable Descriptives", icon = icon("sliders"),
-                   miniContentPanel(
-                     shinycssloaders::withSpinner(dataTableOutput("desc_tbl"), size = 2, color = "#9242f4")
+                       fillCol(dataTableOutput(outputId = "varresp_labels"))
+                       )
                    )
       )
     )
@@ -85,7 +87,10 @@ launch_varview <- function(.df) {
                          y = freq_df,
                          by = "Response")
       }
-    })
+    }, options = list(lengthMenu = list(c(5, 10, 20),
+                                        c("5", "10", "20")),
+                      pageLength = 5)
+    )
 
 
 
