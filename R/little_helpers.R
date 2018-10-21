@@ -11,7 +11,7 @@ get_dflabs<-function(.df){
 
 temp_labels<-sapply(.df, function(.col){
   tmp<-attr(.col, "label")
-  if(length(tmp)>1){ tmp<-NA }
+  if(length(tmp)>1 | is.null(tmp)){ tmp<-NA }
   tmp
 })
 
