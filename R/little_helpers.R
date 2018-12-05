@@ -16,6 +16,7 @@ temp_labels<-sapply(.df, function(.col){
 })
 
 data.frame(
+  "Column" = c(1:ncol(.df)),
   "Name" = names(.df),
   "Class" = sapply(.df, mode),
   "Label" = temp_labels
