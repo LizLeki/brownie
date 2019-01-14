@@ -40,28 +40,24 @@ launch_pmap <- function(.ca){
   server <- function(input, output, session) {
     user_ca <- .ca
     
-    pmap_atts <- reactive({
-      row_coords <- cbind.data.frame(user_ca$rowcoord[,1:2])
+    pmap_df <- reactive({
+      row_coords <- orbit(data.frame(user_ca$rowcoord[,1:2]), input$rotation)
+      col_coords <- orbit(data.frame(user_ca$colcoord[,1:2]), input$rotation)
       
-      orbit(row_coords, input$rotation)
-    })
+      rbind(cbind.data.frame(type = rep("attributes", nrow(row_coords)), row_coords),
+            cbind.data.frame(type = rep("brands", nrow(col_coords)), col_coords))
     
-    pmap_brands <- reactive({
-      col_coords <- cbind.data.frame(user_ca$colcoord[,1:2])
-      
-      orbit(col_coords, input$rotation)
-    })
-    
+      })
+
     output$ca_map <- renderPlot({
       
-      ggplot() +
-        geom_point(data = pmap_atts(), aes(x = Dim1, y = Dim2), color = "blue", size = 7) +
-        geom_point(data = pmap_brands(), aes(x = Dim1, y = Dim2), color = "#AC2214", size = 7) +
+      ggplot(data = pmap_df()) +
+        geom_point(aes(x = Dim1, y = Dim2, color = type), size = 7) +
         geom_hline(yintercept = 0, color = "black") +
         geom_vline(xintercept = 0, color = "black") +
         labs(x = "", y = "") +
         theme_minimal() +
-        theme(axis.text = element_blank())
+        theme(axis.text = element_blank(), legend.position = "none")
     })
     
     # When the Done button is clicked, return a value
