@@ -10,9 +10,11 @@
 #' @import miniUI
 #' @import ggplot2
 #' @importFrom shinycssloaders withSpinner
-#' @param .df A data.frame
+#' @param .ca A ca object, as returned from the package "ca".
+#' @param row_labels A vector of row labels.
+#' @param col_labels A vector of column labels.
 #' 
-launch_pmap <- function(.ca){
+launch_pmap <- function(.ca, row_labels = NULL, col_labels = NULL){
   #this really shouldn't be an issue
   shiny_check<-require("shiny", quietly = TRUE)
   mini_check<-require("miniUI", quietly = TRUE)
@@ -33,7 +35,9 @@ launch_pmap <- function(.ca){
     miniContentPanel(
       fillCol(flex = c(NA,1), align = "center", height = "100%",
               sliderInput(inputId = "rotation", label = "Rotation", min = 0, max = 360, value = 0, step = 1),
-              fillRow(plotOutput(outputId = "ca_map", height = "100%"))
+              div(style = "position:relative",
+                  plotOutput(outputId = "ca_map", hover = hoverOpts(id = "pmap_hover_info")),
+                  uiOutput(outputId = "pmap_hover"))
       )
     ))
   
@@ -44,8 +48,20 @@ launch_pmap <- function(.ca){
       row_coords <- orbit(data.frame(user_ca$rowcoord[,1:2]), input$rotation)
       col_coords <- orbit(data.frame(user_ca$colcoord[,1:2]), input$rotation)
       
-      rbind(cbind.data.frame(type = rep("attributes", nrow(row_coords)), row_coords),
-            cbind.data.frame(type = rep("brands", nrow(col_coords)), col_coords))
+      tmp_df <- rbind(cbind.data.frame(type = rep("attributes", nrow(row_coords)), row_coords),
+                      cbind.data.frame(type = rep("brands", nrow(col_coords)), col_coords))
+      
+      if(!is.null(row_labels) & !is.null(col_labels)){
+        tmp_df <- cbind(data.frame("labels" = c(row_labels, col_labels), tmp_df))
+      } else if(!is.null(row_labels)){
+        tmp_df <- cbind(data.frame("labels" = c(row_labels, rep(NA, length(which(tmp_df$type == "brands")))), 
+                                                tmp_df))
+      } else if(!is.null(col_labels)){
+        tmp_df <- cbind(data.frame("labels" = c(rep(NA, length(which(tmp_df$type == "attributes"))), col_labels), 
+                                   tmp_df))
+      }
+      
+      tmp_df
     
       })
 
@@ -58,6 +74,30 @@ launch_pmap <- function(.ca){
         labs(x = "", y = "") +
         theme_minimal() +
         theme(axis.text = element_blank(), legend.position = "none")
+    })
+    
+    output$pmap_hover <- renderUI({
+      if(!is.null(row_labels) | !is.null(col_labels)){
+        hover <- input$pmap_hover_info
+        if(is.null(hover)) return(NULL)
+        
+        point <- nearPoints(pmap_df(), hover, threshold = 5, maxpoints = 1, addDist = TRUE)
+        if (nrow(point) == 0) return(NULL)
+        
+        #tooltip location
+        left_pct <- (hover$x - hover$domain$left) / (hover$domain$right - hover$domain$left)
+        top_pct <- (hover$domain$top - hover$y) / (hover$domain$top - hover$domain$bottom)
+        
+        left_px <- hover$range$left + left_pct * (hover$range$right - hover$range$left)
+        top_px <- hover$range$top + top_pct * (hover$range$bottom - hover$range$top)
+        
+        style <- paste0("position:absolute; z-index:100; background-color: rgba(245, 245, 245, 0.85); ",
+                        "left:", left_px + 2, "px; top:", top_px + 2, "px;")
+        
+          tooltip <- paste0("<b>", point$labels, "</b>") 
+        
+        wellPanel(style = style, HTML(tooltip))
+      }
     })
     
     # When the Done button is clicked, return a value
