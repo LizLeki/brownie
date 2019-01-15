@@ -14,7 +14,7 @@
 #' @param row_labels A vector of row labels.
 #' @param col_labels A vector of column labels.
 #' 
-launch_pmap <- function(.ca, row_labels = NULL, col_labels = NULL){
+launch_pmap <- function(.ca, row_labels = NULL, col_labels = NULL, launch_type = "web"){
   #this really shouldn't be an issue
   shiny_check<-require("shiny", quietly = TRUE)
   mini_check<-require("miniUI", quietly = TRUE)
@@ -114,5 +114,5 @@ launch_pmap <- function(.ca, row_labels = NULL, col_labels = NULL){
       stopApp(returnValue)
     })
   }
-  runGadget(ui, server, viewer = paneViewer())
+  set_launch(ui, server, launch_type)
 }

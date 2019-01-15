@@ -11,7 +11,7 @@
 #' @importFrom shinycssloaders withSpinner
 #' @param .df A data.frame
 
-launch_varview <- function(.df) {
+launch_varview <- function(.df, launch_type = "web") {
   #this really shouldn't be an issue
   shiny_check<-require("shiny", quietly = TRUE)
   mini_check<-require("miniUI", quietly = TRUE)
@@ -102,5 +102,5 @@ launch_varview <- function(.df) {
 
   }
 
-  runGadget(ui, server, viewer = paneViewer())
+  set_launch(ui, server, launch_type)
 }
