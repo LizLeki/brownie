@@ -23,7 +23,15 @@ launch_pmap <- function(.ca, row_labels = NULL, col_labels = NULL){
   if(inherits(.ca, "ca")){
     if(shiny_check){
       if(mini_check){
-        #move along
+        if(is.null(row_labels) | is.vector(row_labels)){
+          if(is.null(row_labels) | length(row_labels) == nrow(.ca$rowcoord)){
+            if(is.null(col_labels) | is.vector(col_labels)){
+              if(is.null(col_labels) | length(col_labels) == nrow(.ca$colcoord)){
+                
+              } else{ stop(paste0(length(col_labels), " column labels given for ", nrow(.ca$colcoord), " coordinates."))}
+            } else{ stop("If not NULL, col_labels must be a vector of length equal to the number of .ca$colcoord")}
+          } else{ stop(paste0(length(row_labels), " row labels given for ", nrow(.ca$rowcoord), " coordinates."))}
+        } else{ stop("If not NULL, row_labels must be a vector of length equal to the number of .ca$rowcoord")}
       } else{ stop("You need to install miniUI before using this app.")}
     } else{ stop("You need to install shiny before using this app.")}
   } else{ stop(paste0(
