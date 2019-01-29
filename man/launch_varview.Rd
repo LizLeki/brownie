@@ -4,7 +4,7 @@
 \alias{launch_varview}
 \title{An interactive dataframe explorer!}
 \usage{
-launch_varview(.df)
+launch_varview(.df, launch_type = "web")
 }
 \arguments{
 \item{.df}{A data.frame}
