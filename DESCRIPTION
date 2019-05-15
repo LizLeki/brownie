@@ -6,13 +6,12 @@ Author: person("Elizabeth", "Leki", email = "elizabethleki@gmail.com", role = c(
 Description: This package was designed to help provide lightish weight GUI-style capabilities in 
     RStudio for use by non-programmers when transitioning to R from programs such as SPSS.
 Depends: R (>= 3.4.2),
-         shiny,
-         miniUI,
-         shinycssloaders,
-         NISTunits,
-         ggplot2
-License: What license is it under?
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
-Imports: 
+Imports: ggplot2 (>= 3.0.0),
+         miniUI (>= 0.1.1.1),
+         NISTunits (>= 1.0.1),
+         shiny (>= 1.3.0),
+         shinycssloaders (>= 0.2.0)
 RoxygenNote: 6.1.1
