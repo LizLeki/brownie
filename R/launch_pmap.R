@@ -6,34 +6,27 @@
 #' Insert description of uses
 #' 
 #' @export
-#' @import shiny
-#' @import miniUI
-#' @import ggplot2
+#' @importFrom shiny plotOutput renderPlot renderUI uiOutput 
+#' @importFrom shiny div hoverOpts nearPoints observeEvent reactive sliderInput  stopApp wellPanel
+#' @importFrom miniUI miniPage gadgetTitleBar miniContentPanel
+#' @imporFromt ggplot2 ggplot geom_point geom_hline geom_vline labs theme theme_minimal element_blank
 #' @importFrom shinycssloaders withSpinner
 #' @param .ca A ca object, as returned from the package "ca".
 #' @param row_labels A vector of row labels.
 #' @param col_labels A vector of column labels.
 #' 
 launch_pmap <- function(.ca, row_labels = NULL, col_labels = NULL, launch_type = "web"){
-  #this really shouldn't be an issue
-  shiny_check<-require("shiny", quietly = TRUE)
-  mini_check<-require("miniUI", quietly = TRUE)
-  gg_check<-require("ggplot2", quietly = TRUE)
-  
+
   if(inherits(.ca, "ca")){
-    if(shiny_check){
-      if(mini_check){
-        if(is.null(row_labels) | is.vector(row_labels)){
-          if(is.null(row_labels) | length(row_labels) == nrow(.ca$rowcoord)){
-            if(is.null(col_labels) | is.vector(col_labels)){
-              if(is.null(col_labels) | length(col_labels) == nrow(.ca$colcoord)){
-                
-              } else{ stop(paste0(length(col_labels), " column labels given for ", nrow(.ca$colcoord), " coordinates."))}
-            } else{ stop("If not NULL, col_labels must be a vector of length equal to the number of .ca$colcoord")}
-          } else{ stop(paste0(length(row_labels), " row labels given for ", nrow(.ca$rowcoord), " coordinates."))}
-        } else{ stop("If not NULL, row_labels must be a vector of length equal to the number of .ca$rowcoord")}
-      } else{ stop("You need to install miniUI before using this app.")}
-    } else{ stop("You need to install shiny before using this app.")}
+    if(is.null(row_labels) | is.vector(row_labels)){
+      if(is.null(row_labels) | length(row_labels) == nrow(.ca$rowcoord)){
+        if(is.null(col_labels) | is.vector(col_labels)){
+          if(is.null(col_labels) | length(col_labels) == nrow(.ca$colcoord)){
+            
+          } else{ stop(paste0(length(col_labels), " column labels given for ", nrow(.ca$colcoord), " coordinates."))}
+        } else{ stop("If not NULL, col_labels must be a vector of length equal to the number of .ca$colcoord")}
+      } else{ stop(paste0(length(row_labels), " row labels given for ", nrow(.ca$rowcoord), " coordinates."))}
+    } else{ stop("If not NULL, row_labels must be a vector of length equal to the number of .ca$rowcoord")}
   } else{ stop(paste0(
     "\n .ca is not a ca object of the ca package.\n I can only work on ca objects.\n Sorry!")
   )}

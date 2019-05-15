@@ -6,22 +6,17 @@
 #' The purpose of this gadget is to facilitate quick exploration of the variables contained
 #' within a dataframe.
 #' @export
-#' @import shiny
-#' @import miniUI
+#' @importFrom shiny dataTableOutput  fillCol fillRow icon observeEvent
+#' @importFrom shiny renderDataTable renderText selectizeInput stopApp textOutput
+#' @importFrom miniUI miniPage gadgetTitleBar miniTabstripPanel miniTabPanel miniContentPanel
 #' @importFrom shinycssloaders withSpinner
+#' @importFrom dplyr full_join
 #' @param .df A data.frame
 
 launch_varview <- function(.df, launch_type = "web") {
-  #this really shouldn't be an issue
-  shiny_check<-require("shiny", quietly = TRUE)
-  mini_check<-require("miniUI", quietly = TRUE)
 
   if(inherits(.df, "data.frame")){
-    if(shiny_check){
-      if(mini_check){
-        #move along
-      } else{ stop("You need to install miniUI before using this app.")}
-    } else{ stop("You need to install shiny before using this app.")}
+
   } else{ stop(paste0(
     "\n .df is not a data.frame. \n I can only work on data.frames. \n Sorry!")
     )}

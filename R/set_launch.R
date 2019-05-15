@@ -4,6 +4,7 @@
 #'
 #' This function is designed for use in the brownie GUIs.
 #'
+#' @importFrom shiny browserViewer paneViewer runGadget
 #' @param launch_type A data frame containing the x,y coordinates of points to be rotated.
 #' 
 set_launch <- function(ui, server, launch_type){
