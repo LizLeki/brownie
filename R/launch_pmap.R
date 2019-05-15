@@ -6,11 +6,6 @@
 #' Insert description of uses
 #' 
 #' @export
-#' @importFrom shiny plotOutput renderPlot renderUI uiOutput 
-#' @importFrom shiny div hoverOpts nearPoints observeEvent reactive sliderInput  stopApp wellPanel
-#' @importFrom miniUI miniPage gadgetTitleBar miniContentPanel
-#' @imporFromt ggplot2 ggplot geom_point geom_hline geom_vline labs theme theme_minimal element_blank
-#' @importFrom shinycssloaders withSpinner
 #' @param .ca A ca object, as returned from the package "ca".
 #' @param row_labels A vector of row labels.
 #' @param col_labels A vector of column labels.
@@ -31,21 +26,21 @@ launch_pmap <- function(.ca, row_labels = NULL, col_labels = NULL, launch_type =
     "\n .ca is not a ca object of the ca package.\n I can only work on ca objects.\n Sorry!")
   )}
   
-  ui <- miniPage(
-    gadgetTitleBar("Correspondance Analysis Map Explorer", left = NULL),
-    miniContentPanel(
-      fillCol(flex = c(NA,1), align = "center", height = "100%",
-              sliderInput(inputId = "rotation", label = "Rotation", min = 0, max = 360, value = 0, step = 1),
-              div(style = "position:relative",
-                  plotOutput(outputId = "ca_map", hover = hoverOpts(id = "pmap_hover_info")),
-                  uiOutput(outputId = "pmap_hover"))
+  ui <- miniUI::miniPage(
+    miniUI::gadgetTitleBar("Correspondance Analysis Map Explorer", left = NULL),
+    miniUI::miniContentPanel(
+      shiny::fillCol(flex = c(NA,1), align = "center", height = "100%",
+              shiny::sliderInput(inputId = "rotation", label = "Rotation", min = 0, max = 360, value = 0, step = 1),
+              shiny::div(style = "position:relative",
+                  shiny::plotOutput(outputId = "ca_map", hover = shiny::hoverOpts(id = "pmap_hover_info")),
+                  shiny::uiOutput(outputId = "pmap_hover"))
       )
     ))
   
   server <- function(input, output, session) {
     user_ca <- .ca
     
-    pmap_df <- reactive({
+    pmap_df <- shiny::reactive({
       row_coords <- orbit(data.frame(user_ca$rowcoord[,1:2]), input$rotation)
       col_coords <- orbit(data.frame(user_ca$colcoord[,1:2]), input$rotation)
       
@@ -66,23 +61,23 @@ launch_pmap <- function(.ca, row_labels = NULL, col_labels = NULL, launch_type =
     
       })
 
-    output$ca_map <- renderPlot({
+    output$ca_map <- shiny::renderPlot({
       
-      ggplot(data = pmap_df()) +
-        geom_point(aes(x = Dim1, y = Dim2, color = type), size = 7) +
-        geom_hline(yintercept = 0, color = "black") +
-        geom_vline(xintercept = 0, color = "black") +
-        labs(x = "", y = "") +
-        theme_minimal() +
-        theme(axis.text = element_blank(), legend.position = "none")
+      ggplot2::ggplot(data = pmap_df()) +
+        ggplot2::geom_point(ggplot2::aes(x = Dim1, y = Dim2, color = type), size = 7) +
+        ggplot2::geom_hline(yintercept = 0, color = "black") +
+        ggplot2::geom_vline(xintercept = 0, color = "black") +
+        ggplot2::labs(x = "", y = "") +
+        ggplot2::theme_minimal() +
+        ggplot2::theme(axis.text = ggplot2::element_blank(), legend.position = "none")
     })
     
-    output$pmap_hover <- renderUI({
+    output$pmap_hover <- shiny::renderUI({
       if(!is.null(row_labels) | !is.null(col_labels)){
         hover <- input$pmap_hover_info
         if(is.null(hover)) return(NULL)
         
-        point <- nearPoints(pmap_df(), hover, threshold = 5, maxpoints = 1, addDist = TRUE)
+        point <- shiny::nearPoints(pmap_df(), hover, threshold = 5, maxpoints = 1, addDist = TRUE)
         if (nrow(point) == 0) return(NULL)
         
         #tooltip location
@@ -97,14 +92,14 @@ launch_pmap <- function(.ca, row_labels = NULL, col_labels = NULL, launch_type =
         
           tooltip <- paste0("<b>", point$labels, "</b>") 
         
-        wellPanel(style = style, HTML(tooltip))
+        shiny::wellPanel(style = style, HTML(tooltip))
       }
     })
     
     # When the Done button is clicked, return a value
-    observeEvent(input$done, {
+    shiny::observeEvent(input$done, {
       returnValue <- "See you next time!"
-      stopApp(returnValue)
+      shiny::stopApp(returnValue)
     })
   }
   set_launch(ui, server, launch_type)

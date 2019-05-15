@@ -6,11 +6,6 @@
 #' The purpose of this gadget is to facilitate quick exploration of the variables contained
 #' within a dataframe.
 #' @export
-#' @importFrom shiny dataTableOutput  fillCol fillRow icon observeEvent
-#' @importFrom shiny renderDataTable renderText selectizeInput stopApp textOutput
-#' @importFrom miniUI miniPage gadgetTitleBar miniTabstripPanel miniTabPanel miniContentPanel
-#' @importFrom shinycssloaders withSpinner
-#' @importFrom dplyr full_join
 #' @param .df A data.frame
 
 launch_varview <- function(.df, launch_type = "web") {
@@ -21,60 +16,60 @@ launch_varview <- function(.df, launch_type = "web") {
     "\n .df is not a data.frame. \n I can only work on data.frames. \n Sorry!")
     )}
 
-  ui <- miniPage(
+  ui <- miniUI::miniPage(
 
-    gadgetTitleBar("Data.frame Explorer",
-                   left = NULL),
-    miniTabstripPanel(
-      miniTabPanel("Data Labels", icon = icon(name = "tags", lib = "glyphicon"),
-                   miniContentPanel(
-                     shinycssloaders::withSpinner(dataTableOutput("label_tbl"), size = 2)
+    miniUI::gadgetTitleBar("Data.frame Explorer",
+                           left = NULL),
+    miniUI::miniTabstripPanel(
+      miniUI::miniTabPanel("Data Labels", icon = shiny::icon(name = "tags", lib = "glyphicon"),
+                           miniUI::miniContentPanel(
+                             shinycssloaders::withSpinner(shiny::dataTableOutput("label_tbl"), size = 2)
                    )
       ),
-      miniTabPanel("Variable Descriptives", icon = icon("calculator"),
-                   miniContentPanel(
-                     shinycssloaders::withSpinner(dataTableOutput("desc_tbl"), size = 2)
-                   )
+      miniUI::miniTabPanel("Variable Descriptives", icon = shiny::icon("calculator"),
+                           miniUI::miniContentPanel(
+                     shinycssloaders::withSpinner(shiny::dataTableOutput("desc_tbl"), size = 2)
+                     )
       ),
-      miniTabPanel("Variable Explorer", icon = icon(name = "map-o"),
-                   miniContentPanel(
-                     fillRow(
-                       fillCol(selectizeInput("var_name", label = "Variable",
-                                              choices = names(.df),
-                                              options = list(maxOptions = 3000)),
-                               textOutput(outputId = "unlab")
+      miniUI::miniTabPanel("Variable Explorer", icon = shiny::icon(name = "map-o"),
+                           miniUI::miniContentPanel(
+                     shiny::fillRow(
+                       shiny::fillCol(shiny::selectizeInput("var_name", label = "Variable",
+                                                            choices = names(.df),
+                                                            options = list(maxOptions = 3000)),
+                                      shiny::textOutput(outputId = "unlab")
                                
-                       ),
-                       fillCol(dataTableOutput(outputId = "varresp_labels"))
+                                      ),
+                       shiny::fillCol(shiny::dataTableOutput(outputId = "varresp_labels"))
                        )
-                   )
+              )
       )
     )
   )
 
   server <- function(input, output, session) {
 
-    output$label_tbl<-renderDataTable(get_dflabs(.df))
+    output$label_tbl <- shiny::renderDataTable(get_dflabs(.df))
 
-    output$desc_tbl<-renderDataTable(get_dfdesc(.df))
+    output$desc_tbl <- shiny::renderDataTable(get_dfdesc(.df))
 
-    output$unlab<-renderText({paste0("")})
+    output$unlab <- shiny::renderText({paste0("")})
 
-    output$varresp_labels<-renderDataTable({
+    output$varresp_labels <- shiny::renderDataTable({
 
-      freq_df<-data.frame(table(.df[[input$var_name]]))
-      names(freq_df)<-c("Response", "Frequency")
+      freq_df <- data.frame(table(.df[[input$var_name]]))
+      names(freq_df) <- c("Response", "Frequency")
 
-      tmp_lbls<-attr(.df[[input$var_name]], "labels")
+      tmp_lbls <- attr(.df[[input$var_name]], "labels")
 
       if(is.null(tmp_lbls)){
-        output$unlab<-renderText({
+        output$unlab <- shiny::renderText({
           paste0("No response labels found for ", input$var_name )
           })
         freq_df
       } else{
-        output$unlab<-renderText({paste0("")})
-        lbl_df<-data.frame(
+        output$unlab <- shiny::renderText({paste0("")})
+        lbl_df <- data.frame(
           "Response" = as.character(tmp_lbls),
           "Label" = names(tmp_lbls)
           )
@@ -90,9 +85,9 @@ launch_varview <- function(.df, launch_type = "web") {
 
 
     # When the Done button is clicked, return a value
-    observeEvent(input$done, {
+    shiny::observeEvent(input$done, {
       returnValue <- "Thanks for playing!"
-      stopApp(returnValue)
+      shiny::stopApp(returnValue)
     })
 
   }
